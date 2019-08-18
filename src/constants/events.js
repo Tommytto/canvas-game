@@ -1,0 +1,7 @@
+export const EVENTS = {
+    MOVE_RIGHT: 'MOVE_RIGHT',
+    MOVE_LEFT: 'MOVE_LEFT',
+    HERO_MOVE: 'HERO_MOVE',
+    HERO_DIE: 'HERO_DIE',
+    HOLE_BOUND: 'HOLE_BOUND',
+};
