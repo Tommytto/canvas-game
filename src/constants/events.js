@@ -4,4 +4,6 @@ export const EVENTS = {
     HERO_MOVE: 'HERO_MOVE',
     HERO_DIE: 'HERO_DIE',
     HOLE_BOUND: 'HOLE_BOUND',
+    COIN: 'COIN',
+    MOB_DEATH: 'MOB_DEATH',
 };

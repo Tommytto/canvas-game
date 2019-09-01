@@ -1,10 +1,11 @@
 export default class Component {
-    constructor({ctx, camera, sizeObserver, eventEmitter}) {
+    constructor({ctx, engine, camera, sizeObserver, eventEmitter, info}) {
         this.ctx = ctx;
         this.camera = camera;
+        this.engine = engine;
         this.eventEmitter = eventEmitter;
         this.sizeObserver = sizeObserver;
-        this.info = {
+        this.info = info || {
             x: 0,
             y: 0,
             w: 0,
@@ -18,6 +19,22 @@ export default class Component {
         this.assetsPromise = new Promise((resolve) => {
             this.resolveAssets = resolve;
         });
+    }
+
+    getIntersectionInfo(info) {
+        const {x, y, w, h} = this.getInfo();
+
+        const itemBottom = info.y + info.h;
+        const itemRight = info.x + info.w;
+        const itemLeft = info.x;
+        const itemTop = info.y;
+
+        return {
+            top: y - itemBottom,
+            left: x - itemRight,
+            bottom: itemTop - (y + h),
+            right: itemLeft - (x + w),
+        };
     }
 
     init() {

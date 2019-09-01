@@ -4,7 +4,7 @@ export default class MainLayer extends Component {
     init() {
         const [canvasWidth, canvasHeight] = this.sizeObserver.getCanvasSize();
         this.background = new Image();
-        this.background.src = 'assets/back-pattern-2.jpg';
+        this.background.src = 'assets/back-pattern-3.jpg';
         this.background.onload = () => {
             this.resolveAssets();
         };

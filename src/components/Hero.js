@@ -102,12 +102,47 @@ export default class Hero extends Component {
         }
     }
 
-    runJump() {
+    runJump2() {
         const {dy, speed} = this.verticalMove;
         this.moveUp(speed);
         this.verticalMove.speed -= dy;
         if (0 >= speed) {
             this.up = false;
+        }
+    }
+
+    runJump() {
+        const {dy} = this.verticalMove;
+
+        const {y, ...rest} = this.getInfo();
+        const newHeroInfo = {
+            ...rest,
+            y: y + this.verticalMove.speed,
+        };
+        let closestBlock;
+
+        for (let i = 0; i < this.blockingBlocks.length; i++) {
+            const intersectionInfo = this.blockingBlocks[i].getIntersectionInfo(newHeroInfo);
+            const horizontalInside = 0 > intersectionInfo.left && 0 > intersectionInfo.right;
+            const isBlockAbove = this.verticalMove.speed <= intersectionInfo.bottom;
+
+            if (horizontalInside && isBlockAbove) {
+                if (!closestBlock || intersectionInfo.bottom < closestBlock.bottom) {
+                    closestBlock = intersectionInfo;
+                }
+            }
+        }
+
+        const newTop = closestBlock ? Math.min(this.verticalMove.speed, closestBlock.bottom - this.verticalMove.speed) : this.verticalMove.speed;
+        if (0 !== newTop || !closestBlock) {
+            this.moveUp(newTop);
+            this.verticalMove.speed -= dy;
+            if (0 >= this.verticalMove.speed) {
+                this.up = false;
+            }
+        } else {
+            this.up = false;
+            this.verticalMove.speed = 0;
         }
     }
 
@@ -133,7 +168,7 @@ export default class Hero extends Component {
 
         for (let i = 0; i < this.blockingBlocks.length; i++) {
             const intersectionInfo = this.blockingBlocks[i].getIntersectionInfo(newHeroInfo);
-            const horizontalInside = 0 > intersectionInfo.left && 0 < intersectionInfo.right;
+            const horizontalInside = 0 > intersectionInfo.left && 0 > intersectionInfo.right;
             const isBlockUnder = -this.verticalMove.speed <= intersectionInfo.top;
 
             if (horizontalInside && isBlockUnder) {
@@ -153,21 +188,61 @@ export default class Hero extends Component {
         }
     }
 
-    checkRight() {
-        if (this.right) {
-            this.moveRight(this.horizontalMove.dx);
-        }
-    }
-
-    getClosestBlocks() {
-
-    }
-
     checkLeft() {
         if (this.left) {
-            this.moveLeft(this.horizontalMove.dx);
+            // this.moveLeft(this.horizontalMove.dx);
+            const {x, ...rest} = this.getInfo();
+            const newHeroInfo = {
+                ...rest,
+                x: x - this.horizontalMove.dx,
+            };
+            let closestBlock;
+
+            for (let i = 0; i < this.blockingBlocks.length; i++) {
+                const intersectionInfo = this.blockingBlocks[i].getIntersectionInfo(newHeroInfo);
+                const verticalInside = 0 > intersectionInfo.top && 0 > intersectionInfo.bottom;
+                const isLeftSide = -this.horizontalMove.dx <= intersectionInfo.right;
+                if (verticalInside && isLeftSide) {
+                    if (!closestBlock || intersectionInfo.right < closestBlock.right) {
+                        closestBlock = intersectionInfo;
+                    }
+                }
+            }
+
+            const newLeft = closestBlock ? Math.min(this.horizontalMove.dx, this.horizontalMove.dx + closestBlock.right) : this.horizontalMove.dx;
+            if (0 !== newLeft || !closestBlock) {
+                this.moveLeft(newLeft);
+            }
         }
     }
+
+    checkRight() {
+        if (this.right) {
+            const {x, ...rest} = this.getInfo();
+            const newHeroInfo = {
+                ...rest,
+                x: x + this.horizontalMove.dx,
+            };
+            let closestBlock;
+
+            for (let i = 0; i < this.blockingBlocks.length; i++) {
+                const intersectionInfo = this.blockingBlocks[i].getIntersectionInfo(newHeroInfo);
+                const verticalInside = 0 > intersectionInfo.top && 0 > intersectionInfo.bottom;
+                const isRightSide = -this.horizontalMove.dx <= intersectionInfo.left;
+                if (verticalInside && isRightSide) {
+                    if (!closestBlock || intersectionInfo.left < closestBlock.left) {
+                        closestBlock = intersectionInfo;
+                    }
+                }
+            }
+            const newLeft = closestBlock ? Math.min(this.horizontalMove.dx, this.horizontalMove.dx + closestBlock.left) : this.horizontalMove.dx;
+            if (0 !== newLeft || !closestBlock) {
+                this.moveRight(newLeft);
+            }
+        }
+    }
+
+    getClosestBlocks() {}
 
     draw() {
         this.checkJump();
